@@ -1,17 +1,14 @@
-﻿# Environment & Secrets
+﻿# Secrets & Environments
 .env
 *.env
-
-# Python & Virtual Environments
-venv/
 .venv/
+venv/
 __pycache__/
-*.py[cod]
+*.pyc
 
-# Project Local Cache & Databases
+# Runtime Storage & Disk Cache
+storage/
 .llm_cache/
-storage/decisions.db
-storage/chroma/
 
 # OS Artifacts
 Thumbs.db
