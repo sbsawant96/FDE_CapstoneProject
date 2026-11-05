@@ -1,0 +1,3 @@
+﻿Answer this support ticket using the documentation provided:
+{docs}
+Customer: {ticket_text}

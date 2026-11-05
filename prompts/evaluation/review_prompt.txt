@@ -1,0 +1,3 @@
+﻿Review candidate response for grounding against source documentation:
+1. Every factual assertion must match an attached document.
+2. Flag any ungrounded commitments or missing bracketed [DOC-xxx] citations.

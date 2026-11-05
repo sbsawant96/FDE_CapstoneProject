@@ -1,0 +1,3 @@
+﻿Classify the following customer ticket into one of these intents: technical_issue, billing_inquiry, account_access, general_inquiry. Also give urgency (low, medium, high) and confidence between 0 and 1. Output JSON.
+
+Ticket: {ticket_text}
