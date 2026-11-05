@@ -1,13 +1,13 @@
 ﻿from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional
 
 from src.pipeline import process_ticket, PipelineOutput
 
 app = FastAPI(
     title="CloudServe Support Automation Triage API",
     version="1.0.0",
-    description="Automated tier-1 ticket triage, retrieval-augmented response generation, and guardrail verification."
+    description="Automated tier-1 ticket triage, retrieval-augmented answer generation, and guardrails."
 )
 
 class TicketRequest(BaseModel):
@@ -19,32 +19,41 @@ class TicketRequest(BaseModel):
 
 class TicketResponse(BaseModel):
     ticket_id: str
+    channel: str
     action_taken: str
     outbound_message: Optional[str]
-    intent: Optional[str]
-    urgency: Optional[str]
-    confidence: Optional[float]
     escalation_reason: Optional[str]
-    sources_used: List[Dict[str, Any]] = []
+    escalation_queue: Optional[str]
+    intent: str
+    confidence: float
+    decision_id: str
+
+@app.get("/")
+def root():
+    return {
+        "service": "CloudServe Support Automation API",
+        "status": "online",
+        "docs_url": "/docs"
+    }
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "service": "support-triage-pipeline"}
+    return {"status": "healthy"}
 
 @app.post("/triage", response_model=TicketResponse)
 def triage_ticket(ticket: TicketRequest):
     try:
-        raw_ticket = ticket.dict()
+        raw_ticket = {
+            "ticket_id": ticket.ticket_id,
+            "id": ticket.ticket_id,
+            "text": ticket.text,
+            "body": ticket.text,
+            "channel": ticket.channel,
+            "customer_tier": ticket.customer_tier,
+            "language_fluency": ticket.language_fluency
+        }
+        
         result: PipelineOutput = process_ticket(raw_ticket)
-        return TicketResponse(
-            ticket_id=ticket.ticket_id,
-            action_taken=result.action_taken,
-            outbound_message=result.outbound_message,
-            intent=result.intent,
-            urgency=result.urgency,
-            confidence=result.confidence,
-            escalation_reason=result.escalation_reason,
-            sources_used=result.sources_used
-        )
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
